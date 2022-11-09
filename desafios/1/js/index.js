@@ -21,6 +21,13 @@
 
 //desafio 1
 
+/*
+Desafio: desenvolva uma calculadora para as 4 operações básicas usando const com os dados vindo de um formulário.
+Link para auxiliar na resolução: https://www.horadecodar.com.br/2022/01/31/como-pegar-dados-de-formulario-com-javascript/
+Se não conseguir com o que está proposto no link, usar document.getElementById().
+
+*/
+
 const d1Array = [1, 2, 3, 4, 5]
 const d1Object = {
    n1: d1Array[0],
