@@ -1,27 +1,38 @@
-// Importação dos módulos.
 const http = require('http')
+const data = require('./urls.json')
 const URL = require('url')
 const fs = require('fs')
 const path = require('path')
 
-// Importação do documento urls.json. Nesse momento do código, o conteúdo do documento vai para o objeto data.
-const data = require('./urls.json')
 
-// Servidor rodando na porta 3000.
-http.createServer((req, res) => {
+function writeFile(retorno){
 
-    // Desestruturação da query string da URL para obter os valores que estão associados às chaves name, url e del.
-    const { name, url, del } = URL.parse(req.url, true).query
+    fs.writeFile(
+        path.join(__dirname, 'urls.json'),
+        JSON.stringify(data, null, 2),
+        err => {
+            if (err) throw err
+            retorno('Operação realizada com sucesso!')
+        }
+    )
 
-    // Mostrar o conteúdo do JSON.
-    if (!name || !url)
-        return res.end('show')
+}
+http.createServer((req, res)=>{
 
-    // Delete - apagar do JSON.
-    if (del) {
-        return res.end('delete')
+    const { name, url,del} = URL.parse(req.url, true).query
+    if(!name || !url)
+        return res.end(JSON.stringify(data)) 
+
+    if (del){
+        
+        data.urls = data.urls.filter(item => item.url != url)
+        return writeFile(message => res.end(message))
+        // return res.end('delete')
+        // return res.end(JSON.stringify(data)) 
     }
 
-    return res.end('create')
+    data.urls.push({name, url})
+    return writeFile(message => res.end(message))
+    // return res.end('create')
 
-}).listen(3000, () => console.log('Api is running.'))
+}).listen(3000, () => console.log('API is running'))
