@@ -2,23 +2,51 @@ const ul = document.querySelector('ul')
 const input = document.querySelector('input')
 const form = document.querySelector('form')
 
-// Função que carrega o conteúdo da API.
 async function load() {
-    // fetch está como await para evitar que entre num esquema de promisse e só devolva o conteúdo após a iteração qua acontece em seguida.
-    const res = await fetch('http://localhost:3000/')
-        .then(data => data.json())
-    // Iterando no vetor com o conteúdo (JSON) que está vindo da API e adicionando-os no frontend.
-    res.urls.map(({name, url}) => addElement({name, url}))
+    const response = await fetch('http://localhost:3000/').then(data => data.json())
+    ul.innerHTML = ''
+    response.urls.map((link) => addElement(link))
+}
+
+function newLink({ name, url }) {
+    fetch(`http://localhost:3000?name=${name}&url=${url}`)
+        .then(res => {
+            if (res.status == 200)
+                alert('Adicionado com sucesso!')
+        })
+        .catch(error => alert('Erro ao adicionar favorito!'))
+    load()
 }
 
 load()
+function addElement({ name, url }) {
+    const li = document.createElement('li')
+    const a = document.createElement("a")
+    const trash = document.createElement("span")
 
-function addElement(???) {
-    ???
+    a.href = url
+    a.innerHTML = name
+    a.target = "_blank"
+
+    trash.innerHTML = "x"
+    trash.onclick = () => removeElement(trash)
+
+    li.append(a)
+    li.append(trash)
+    ul.append(li)
+    ul.children
 }
 
-function removeElement(element) {
-    ???
+function removeElement(el) {
+    const linkElement = el.parentNode.children[0]
+    const name = linkElement.innerText, url = linkElement.getAttribute('href')
+    console.log({ name, url })
+    if (confirm('Tem certeza que deseja deletar?')) {
+        // el.parentNode.remove()
+        fetch(`http://localhost:3000?name=${name}&url=${url}&del=del`)
+        load()
+    }
+
 }
 
 form.addEventListener('submit', (event) => {
@@ -37,7 +65,7 @@ form.addEventListener('submit', (event) => {
     if (!/^http/.test(url))
         return alert('Digite a url da maneira correta.')
 
-    addElement({ name, url })
-
+    // addElement({ name, url })
+    newLink({ name, url })
     input.value = ''
 })
